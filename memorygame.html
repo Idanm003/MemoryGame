@@ -14,14 +14,23 @@
         <h1>Memory Game</h1>
         <p>Choose Your Theme:</p>
         <div class="theme-buttons">
-            <button onclick="startTheme('hp')">Harry Potter</button>
-            <button onclick="startTheme('dogs')">Dogs</button>
-            <button onclick="startTheme('countries')">Countries</button>
-            <button onclick="startTheme('random')">Suprise Me!</button>
+            <button onclick="startTheme('Harry Potter')">Harry Potter</button>
+            <button onclick="startTheme('Dogs')">Dogs</button>
+            <button onclick="startTheme('Countries')">Countries</button>
+            <button onclick="startTheme('Random')">Suprise Me!</button>
         </div>
-        <div id="game-board" style="display: none;">
+        <div id="game-board" style="display: none;"></div>
+
+        <div id="game-controls" style="display: none; margin-top: 20px;">
             <button onclick="restartGame()">Restart</button>
             <button onclick="goBackToThemes()">Back to Themes</button>
+        </div>
+
+        <div class ="winMsg" style="display: none;">
+            <h2>Congratulations! You Won!</h2>
+            <p>You Won The Game!</p>
+            <button onclick="goBackToThemes()">Back to Themes</button>
+            <button onclick="restartGame()">Restart</button>
         </div>
     </div>
 
