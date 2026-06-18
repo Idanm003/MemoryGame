@@ -2,7 +2,7 @@ const MAX_PAIRS = 8;
 const API_URLS = {
     HARRY_POTTER: "https://hp-api.onrender.com/api",
     DOGS: "https://dog.ceo/api",
-    COUNTRIES: "https://restcountries.com/v3.1",
+    COUNTRIES: "https://api.restcountries.com/countries/v5",
 };
 const THEMES = ["Harry Potter", "Dogs", "Countries", "Random"];
 
@@ -22,9 +22,9 @@ async function getImagesByTheme(theme) {
             const res = await fetch(`${API_URLS.HARRY_POTTER}/characters`);
             if (!res.ok) throw new Error(`HTTP ${res.status}: Failed to fetch Harry Potter characters`);
             const data = await res.json();
-            const withImages = data.filter(character => character.image);
+            const dataWithImages = data.filter(character => character.image);
 
-            return pickRandomCards(MAX_PAIRS, withImages).map(character => ({
+            return pickRandomCards(MAX_PAIRS, dataWithImages).map(character => ({
                 src: character.image, alt: character.name
             }));
         } catch (error) {
@@ -48,12 +48,13 @@ async function getImagesByTheme(theme) {
 
     if (theme === "Countries") {
         try {
-            const res = await fetch(`${API_URLS.COUNTRIES}/all`);
+            const res = await fetch(`${API_URLS.COUNTRIES}?limit=100`);
             if (!res.ok) throw new Error(`HTTP ${res.status}: Failed to fetch countries`);
             const data = await res.json();
             
             return pickRandomCards(MAX_PAIRS, data).map(country => ({
-                src: country.flags.png, alt: country.name.common,
+                src: country['flag.url_png'], 
+                alt: country['name.common'],
             }));
         } catch (error) {
             console.error("Countries API error:", error);
@@ -94,6 +95,7 @@ function startGame(images) {
     gameBoard.style.display = "grid";
     gameControls.style.display = "block";
     themeButtons.style.display = "none";
+    document.querySelector(".winMsg").style.display = "none";
 
     const deck = [];
     images.forEach((image, index) => {
