@@ -8,13 +8,33 @@ const THEMES = ["Harry Potter", "Dogs", "Countries", "Random"];
 
 const gameBoard = document.getElementById("game-board");
 const gameControls = document.getElementById("game-controls");
+const themeChoose = document.getElementById("theme-choose");
 const themeButtons = document.querySelector(".theme-buttons");
+const winMsg = document.querySelector(".winMsg");
 
 let lockedBoard = false;
 let hasFlippedOver = false;
 let currentTheme = '';
 let firstCard, secondCard;
 let matchedCards = 0;
+
+function showView(view) {
+    const allSections = [
+        themeChoose,
+        themeButtons,
+        gameBoard,
+        gameControls,
+        winMsg
+    ];
+    allSections.forEach(elements => (elements.style.display = "none"));
+
+    const layout = {
+        themes: [[themeChoose, "block"], [themeButtons, "flex"]],
+        game: [[gameBoard, "grid"], [gameControls, "block"]],
+        win: [[winMsg, "block"]],
+    };
+    layout[view].forEach(([element, display]) => (element.style.display = display));
+}
 
 async function getImagesByTheme(theme) {
     if (theme === "Harry Potter") {
@@ -48,13 +68,29 @@ async function getImagesByTheme(theme) {
 
     if (theme === "Countries") {
         try {
-            const res = await fetch(`${API_URLS.COUNTRIES}?limit=100`);
+            const res = await fetch(
+                `${API_URLS.COUNTRIES}?response_fields=names.common,flag.url_png&limit=100`,
+                { headers: { 'Authorization': 'Bearer rc_live_2c3d4cb8ba0841888a8936d14d07fccb' } }
+            );
             if (!res.ok) throw new Error(`HTTP ${res.status}: Failed to fetch countries`);
-            const data = await res.json();
-            
-            return pickRandomCards(MAX_PAIRS, data).map(country => ({
-                src: country['flag.url_png'], 
-                alt: country['name.common'],
+
+            const body = await res.json();
+            const countries = body.data.objects;
+
+            const safeGet = (obj, path) =>
+                path in obj ? obj[path] : path.split('.').reduce((obj, key) => (
+                    obj && key in obj ? obj[key] : undefined), obj
+                );
+            const validCountries = countries.filter(countriesValid => safeGet(countriesValid, 'flag.url_png'));
+            if (validCountries.length < MAX_PAIRS) {
+                throw new Error(`Not enough countries with flag data: 
+                    found ${validCountries.length}, need at least ${MAX_PAIRS}.`
+                );
+            }
+
+            return pickRandomCards(MAX_PAIRS, validCountries).map(country => ({
+                src: safeGet(country, 'flag.url_png'),
+                alt: safeGet(country, 'names.common'),
             }));
         } catch (error) {
             console.error("Countries API error:", error);
@@ -92,10 +128,7 @@ function startGame(images) {
     [firstCard, secondCard] = [null, null];
 
     gameBoard.innerHTML = "";
-    gameBoard.style.display = "grid";
-    gameControls.style.display = "block";
-    themeButtons.style.display = "none";
-    document.querySelector(".winMsg").style.display = "none";
+    showView("game");
 
     const deck = [];
     images.forEach((image, index) => {
@@ -153,9 +186,7 @@ function resetBoard() {
 }
 
 function handleWin() {
-    gameBoard.style.display = "none";
-    gameControls.style.display = "none";
-    document.querySelector(".winMsg").style.display = "block";
+    showView("win");
 }
 
 function restartGame() {
@@ -163,10 +194,7 @@ function restartGame() {
 }
 
 function goBackToThemes() {
-    gameBoard.style.display = "none";
-    gameControls.style.display = "none";
-    document.querySelector(".winMsg").style.display = "none";
-    themeButtons.style.display = "flex";
+    showView("themes");
     matchedCards = 0;
 }
 
