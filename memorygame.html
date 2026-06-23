@@ -1,12 +1,40 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="gamestyle.css">
     <title>Memory Game</title>
 </head>
+
 <body>
+
+    <div class="game-container">
+        <h1>Memory Game</h1>
+        <p id="theme-choose">Choose Your Theme:</p>
+        <div class="theme-buttons">
+            <button type="button" onclick="startTheme('Harry Potter')">Harry Potter</button>
+            <button type="button" onclick="startTheme('Dogs')">Dogs</button>
+            <button type="button" onclick="startTheme('Countries')">Countries</button>
+            <button type="button" onclick="startTheme('Random')">Suprise Me!</button>
+        </div>
+        <div id="game-board" style="display: none;"></div>
+
+        <div id="game-controls" style="display: none; margin-top: 20px;">
+            <button onclick="restartGame()">Restart</button>
+            <button onclick="goBackToThemes()">Back to Themes</button>
+        </div>
+
+        <div class ="winMsg" style="display: none;">
+            <h2>Congratulations! You Won!</h2>
+            <p>You Won The Game!</p>
+            <button onclick="goBackToThemes()">Back to Themes</button>
+            <button onclick="restartGame()">Restart</button>
+        </div>
+    </div>
+
     <script src="gamescript.js"></script>
 </body>
+
 </html>
