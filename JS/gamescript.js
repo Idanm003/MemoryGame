@@ -1,10 +1,9 @@
-const MAX_PAIRS = 8;
-const API_URLS = {
-    HARRY_POTTER: "https://hp-api.onrender.com/api",
-    DOGS: "https://dog.ceo/api",
-    COUNTRIES: "https://api.restcountries.com/countries/v5",
-};
-const THEMES = ["Harry Potter", "Dogs", "Countries", "Random"];
+const MAX_PAIRS = CONFIG.MAX_PAIRS;
+const GRID_COLUMNS = CONFIG.GRID_COLUMNS;
+const UNFLIP_DELAY_MS = CONFIG.UNFLIP_DELAY_MS;
+const COUNTRIES_LIMIT = CONFIG.COUNTRIES_LIMIT;
+const API_URLS = CONFIG.API_URLS;
+const THEMES = CONFIG.THEMES;
 
 const gameBoard = document.getElementById("game-board");
 const gameControls = document.getElementById("game-controls");
@@ -69,8 +68,8 @@ async function getImagesByTheme(theme) {
     if (theme === "Countries") {
         try {
             const res = await fetch(
-                `${API_URLS.COUNTRIES}?response_fields=names.common,flag.url_png&limit=100`,
-                { headers: { 'Authorization': 'Bearer rc_live_2c3d4cb8ba0841888a8936d14d07fccb' } }
+                `${API_URLS.COUNTRIES}?response_fields=names.common,flag.url_png&limit=${COUNTRIES_LIMIT}`,
+                { headers: { 'Authorization': `Bearer ${CONFIG.COUNTRIES_API_KEY}` } }
             );
             if (!res.ok) throw new Error(`HTTP ${res.status}: Failed to fetch countries`);
 
@@ -132,6 +131,7 @@ function startGame(images) {
     [firstCard, secondCard] = [null, null];
 
     gameBoard.innerHTML = "";
+    gameBoard.style.gridTemplateColumns = `repeat(${GRID_COLUMNS}, 1fr)`;
     showView("game");
 
     const deck = [];
@@ -181,7 +181,7 @@ function unflipCards() {
         firstCard.classList.remove("flip");
         secondCard.classList.remove("flip");
         resetBoard();
-    }, 1500);
+    }, UNFLIP_DELAY_MS);
 }
 
 function resetBoard() {

@@ -1,0 +1,6 @@
+# Local config containing your API key.
+# Copy config.example.js to config.js and fill in your key.
+config.js
+
+# OS / editor junk
+.DS_Store
