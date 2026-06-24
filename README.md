@@ -1,6 +1,6 @@
 # Memory Game
 
-A browser-based memory (concentration) card game with multiple image themes pulled live from public APIs. 
+A browser-based memory card game with multiple image themes pulled live from public APIs. 
 Flip cards two at a time, find all the matching pairs, and win.
 
 ## Features
