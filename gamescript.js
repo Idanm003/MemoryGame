@@ -19,21 +19,21 @@ let firstCard, secondCard;
 let matchedCards = 0;
 
 function showView(view) {
-    const allSections = [
-        themeChoose,
-        themeButtons,
-        gameBoard,
-        gameControls,
-        winMsg
-    ];
-    allSections.forEach(elements => (elements.style.display = "none"));
+    themeChoose.style.display = "none";
+    themeButtons.style.display = "none";
+    gameBoard.style.display = "none";
+    gameControls.style.display = "none";
+    winMsg.style.display = "none";
 
-    const layout = {
-        themes: [[themeChoose, "block"], [themeButtons, "flex"]],
-        game: [[gameBoard, "grid"], [gameControls, "block"]],
-        win: [[winMsg, "block"]],
-    };
-    layout[view].forEach(([element, display]) => (element.style.display = display));
+    if (view === "themes") {
+        themeChoose.style.display = "block";
+        themeButtons.style.display = "flex";
+    } else if (view === "game") {
+        gameBoard.style.display = "grid";
+        gameControls.style.display = "block";
+    } else if (view === "win") {
+        winMsg.style.display = "block";
+    }
 }
 
 async function getImagesByTheme(theme) {
@@ -77,26 +77,30 @@ async function getImagesByTheme(theme) {
             const body = await res.json();
             const countries = body.data.objects;
 
-            const safeGet = (obj, path) =>
-                path in obj ? obj[path] : path.split('.').reduce((obj, key) => (
-                    obj && key in obj ? obj[key] : undefined), obj
-                );
-            const validCountries = countries.filter(countriesValid => safeGet(countriesValid, 'flag.url_png'));
+            const validCountries = countries.filter(country => getCountryFlag(country));
             if (validCountries.length < MAX_PAIRS) {
-                throw new Error(`Not enough countries with flag data: 
-                    found ${validCountries.length}, need at least ${MAX_PAIRS}.`
-                );
+                throw new Error(`Not enough countries with flag data: found ${validCountries.length}, need at least ${MAX_PAIRS}.`);
             }
 
             return pickRandomCards(MAX_PAIRS, validCountries).map(country => ({
-                src: safeGet(country, 'flag.url_png'),
-                alt: safeGet(country, 'names.common'),
+                src: getCountryFlag(country),
+                alt: getCountryName(country),
             }));
         } catch (error) {
             console.error("Countries API error:", error);
             throw error;
         }
     }
+}
+
+function getCountryFlag(country) {
+    if (!country.flag) return undefined;
+    return country.flag.url_png;
+}
+
+function getCountryName(country) {
+    if (!country.names) return undefined;
+    return country.names.common;
 }
 
 function pickRandomCards(max, array) {
