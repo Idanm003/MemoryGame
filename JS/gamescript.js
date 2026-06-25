@@ -35,6 +35,8 @@ function showView(view) {
     }
 }
 
+// Fetches images for the chosen theme and returns them as { src, alt } objects
+
 async function getImagesByTheme(theme) {
     if (theme === "Harry Potter") {
         try {
@@ -202,10 +204,13 @@ function goBackToThemes() {
     matchedCards = 0;
 }
 
+//Returns new array with the same items in random order
+
 function shuffle(array) {
     const copiedArray = [...array];
     for (let i = copiedArray.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
+        // swaps item i with the randomly chosen item j
         [copiedArray[i], copiedArray[j]] = [copiedArray[j], copiedArray[i]];
     }
     return copiedArray;
